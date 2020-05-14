@@ -36,7 +36,10 @@ Structure read_poscar(const std::string &poscar_path) {
   while (ss2 >> specie) {
     species.push_back(specie);
   }
-
+  for (int i=0; i<species.size(); i++)
+  {
+  	std::cout<<species.at(i)<<std::endl;
+  }
   // Number of species line
   std::getline(file, line);
   std::vector<int> NumSpecies;
@@ -44,6 +47,11 @@ Structure read_poscar(const std::string &poscar_path) {
   int spec;
   while (ss3 >> spec) {
     NumSpecies.push_back(spec);
+  }
+
+  for (int i=0; i<species.size(); i++)
+  {
+  	std::cout<<NumSpecies.at(i)<<std::endl;
   }
 
   // Coord-type line

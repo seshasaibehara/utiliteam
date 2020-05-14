@@ -78,7 +78,7 @@ SymGroup<SymOp, BinarySymOpPeriodicCompare_f, BinarySymOpPeriodicMultiplier_f> g
         {
             SymOp symop_translation(Eigen::Matrix3d::Identity(),translation);
             auto transformed_translated_basis=transform_basis(symop_translation,transformed_basis);
-            if(basis_maps_onto_itself(basis,transformed_translated_basis,struc.get_lattice(),0.01))
+            if(basis_maps_onto_itself(basis,transformed_translated_basis,struc.get_lattice(), 0.1))
             {
 		std::cout<<"testing symop in basis maps onto itself function:"<<std::endl;
 		std::cout<<point_op.get_cart_matrix()<<std::endl;

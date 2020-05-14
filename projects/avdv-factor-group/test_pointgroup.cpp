@@ -1,6 +1,8 @@
 #include "point_group.hpp"
 #include "tests.hpp"
 #include <iostream>
+#include "io.hpp"
+#include "structure.hpp"
 
 int main()
 {
@@ -30,6 +32,16 @@ int main()
     SymGroup<SymOp, CartesianBinaryComparator_f> point_group_test = generate_point_group(simple_cube_lattice, 1e-6);
     EXPECT_TRUE(48==point_group_test.operations().size(), "check cubic point group size is 48");
 
+ //test calc_point_group function for pnb9o25 
+    Structure pnb9o25=read_poscar("./test_files/pnb9o25_prim.vasp");
+    SymGroup<SymOp, CartesianBinaryComparator_f> point_group_pnb9o25 = generate_point_group(pnb9o25.get_lattice().col_vector_matrix(), 1e-6);
+    std::cout<<point_group_pnb9o25.operations().size()<<std::endl;
+    EXPECT_TRUE(16==point_group_pnb9o25.operations().size(), "check point group size is 12");
+ //test calc_point_group function for fese2Li2 
+    Structure FeLi2Se2=read_poscar("./test_files/FeLi2Se2.vasp");
+    SymGroup<SymOp, CartesianBinaryComparator_f> point_group_FeLi2Se2 = generate_point_group(FeLi2Se2.get_lattice().col_vector_matrix(), 1e-6);
+    std::cout<<point_group_FeLi2Se2.operations().size()<<std::endl;
+    EXPECT_TRUE(12==point_group_FeLi2Se2.operations().size(), "check point group size is 12");
     return 0;
 }
 

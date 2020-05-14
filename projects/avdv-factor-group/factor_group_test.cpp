@@ -144,6 +144,7 @@ bool test_fcc_factor_group(double tol)
     return fg.operations().size()==48;
 }
 
+
 bool test_FeLi2Se2_factor_group(double tol)
 {
     Structure fcc=read_poscar("./test_files/FeLi2Se2.vasp");
@@ -156,6 +157,20 @@ bool test_FeLi2Se2_factor_group(double tol)
         std::cout<<op.get_translation().transpose()<<"\n\n";
     }
     return fg.operations().size()==6;
+}
+
+bool test_diamond_factor_group(double tol)
+{
+    Structure fcc=read_poscar("./test_files/diamond.vasp");
+    auto fg=generate_factor_group(fcc, tol); 
+    std::cout<<"DEBUGGING: diamond fg.size() is "<<fg.operations().size()<<std::endl;
+    std::cout<<"Hellooooooooooo\n";
+    for(const SymOp& op : fg.operations())
+    {
+        std::cout<<op.get_cart_matrix()<<"\n\n";
+        std::cout<<op.get_translation().transpose()<<"\n\n";
+    }
+    return fg.operations().size()==48;
 }
 
 bool test_pnb9o25_factor_group(double tol)
@@ -179,7 +194,7 @@ int main()
 {
     std::cout<<"---- Running Factor Group Tests ----"<<std::endl;
     std::cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<std::endl;
-    double tol= 0.001;
+    double tol= 1e-8;
     EXPECT_TRUE(test_transform_basis_inversion(), "Transform basis inversion");
     EXPECT_TRUE(test_transform_basis_glide(), "Transform basis glide");
     EXPECT_TRUE(test_transform_basis_size(), "Transform basis size");
@@ -189,6 +204,7 @@ int main()
     EXPECT_TRUE(basis_doesnt_map_onto_itself(tol), "Basis shouldnt map");
     EXPECT_TRUE(generate_translations_works(tol), "Generate translations should generate translations");
     EXPECT_TRUE(test_fcc_factor_group(tol), "FCC factor group has 48 operations");
+    EXPECT_TRUE(test_diamond_factor_group(tol), "FCC factor group has 48 operations");
     EXPECT_TRUE(test_pnb9o25_factor_group(tol), "pnb9o25 factor group has 4 operations");
     EXPECT_TRUE(test_FeLi2Se2_factor_group(tol), "FCC factor group has 48 operations");
     return 0;

@@ -28,7 +28,7 @@ m_site.m_coord.bring_within(m_lattice, m_precision);
 } 
 bool SitePeriodicCompare_f::operator()(Site other) 
 {	
-	other.m_coord.bring_within(m_lattice, m_precision);
+	other.m_coord.bring_within(m_lattice, 1e-5);
 	Eigen::Vector3d precision_vec;
 	SiteCompare_f compare(m_site, m_precision);
 	return compare(other);
