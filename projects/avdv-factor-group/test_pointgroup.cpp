@@ -36,12 +36,12 @@ int main()
     Structure pnb9o25=read_poscar("./test_files/pnb9o25_prim.vasp");
     SymGroup<SymOp, CartesianBinaryComparator_f> point_group_pnb9o25 = generate_point_group(pnb9o25.get_lattice().col_vector_matrix(), 1e-6);
     std::cout<<point_group_pnb9o25.operations().size()<<std::endl;
-    EXPECT_TRUE(16==point_group_pnb9o25.operations().size(), "check point group size is 12");
+    EXPECT_TRUE(16==point_group_pnb9o25.operations().size(), "check point group size is 16");
  //test calc_point_group function for fese2Li2 
     Structure FeLi2Se2=read_poscar("./test_files/FeLi2Se2.vasp");
     SymGroup<SymOp, CartesianBinaryComparator_f> point_group_FeLi2Se2 = generate_point_group(FeLi2Se2.get_lattice().col_vector_matrix(), 1e-6);
     std::cout<<point_group_FeLi2Se2.operations().size()<<std::endl;
-    EXPECT_TRUE(12==point_group_FeLi2Se2.operations().size(), "check point group size is 12");
+    EXPECT_TRUE(24==point_group_FeLi2Se2.operations().size(), "check point group size is 24");
     return 0;
 }
 
