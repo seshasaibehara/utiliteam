@@ -2,23 +2,26 @@
 #define WYCOFF_HH
 
 #include "../../submodules/eigen-git-mirror/Eigen/Core"
-/* #include "../avdv-factor-group/" */
+#include "../avdv-factor-group/include.hpp"
 #include <vector>
 
-struct Subspace
+class Subspace
 {
+    Subspace(const Eigen::Matrix3d& basis_col_vectors, const Eigen::Vector3d& offset);
     std::string formula() const;
     Eigen::Vector3d offset;
-    Eigen::Matrix3d basis_vectors; 
+    Eigen::Matrix3d basis_col_vectors;/* [100    [x   
+                                      010 dot y  + [offset] 
+                                      001]    z]*/
 
     //Maybe a 4x4 matrix?
 };
 
 /* std::vector<Subspace> make_orbit(const std::vector<SymOp>& coset, const Subspace& prototype); */
 /* Subspace operator*(const SymOp& op, const Subspace& prototype); */
+/*everytime we see x in the wycoff position, we can replace it with a unit vector
 
-
-/* class?? Wyckoff?? */
+/yyyyyyy?? Wyckoff?? */
 /*     vector of vectors */
 /*
  * Some notes:
@@ -48,18 +51,18 @@ struct Subspace
 i*/
 
 //TODO: Consider using a typedef for SymGroup
-typedef SymGroup<SymOp, BinarySymOpPeriodicCompare_f, BinarySymOpPeriodicMultiplier_f> SubspaceGroup;
+typedef SymGroup<SymOp, BinarySymOpPeriodicCompare_f, BinarySymOpPeriodicMultiplier_f> PeriodicGroup;
 
-std::vector<SymOps> find_coset(SymGroup<SymOp, BinarySymOpPeriodicCompare_f, BinarySymOpPeriodicMultiplier_f> factor_group, SymGroup<SymOp, BinarySymOpPeriodicCompare_f, BinarySymOpPeriodicMultiplier_f> subgroup);
+std::vector<SymOp> find_coset(PeriodicGroup factor_group,PeriodicGroup subgroup);
 
 Eigen::Matrix4d make_symop_4dmatrix(SymOp input_op);
 
 //Reynolds?
-Eigen::Matrix4d average_symgroup_operations(SymGroup<SymOp, BinarySymOpPeriodicCompare_f, BinarySymOpPeriodicMultiplier_f> subgroup);
+Eigen::Matrix4d make_reynolds_operator(PeriodicGroup subgroup);
 
-Mystery_WyckoffType find_invariant_subspace(SymGroup<SymOp, BinarySymOpPeriodicCompare_f, BinarySymOpPeriodicMultiplier_f> subgroup);
+Subspace find_invariant_subspace(SymGroup<SymOp, BinarySymOpPeriodicCompare_f, BinarySymOpPeriodicMultiplier_f> subgroup);
 
-std::vector<Mystery_WyckoffType> find_symmetrically_equivalent_wyckoff_positions(std::vector<SymOp> coset, Mystery_wyckoffTpye wyckoff_position);
+std::vector<Subspace> find_symmetrically_equivalent_wyckoff_positions(std::vector<SymOp> coset, Subspace wyckoff_position);
 
 
 
