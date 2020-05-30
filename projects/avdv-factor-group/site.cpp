@@ -31,15 +31,6 @@ SitePeriodicCompare_f::SitePeriodicCompare_f(Site site, double prec, const Latti
 } 
 bool SitePeriodicCompare_f::operator()(Site other) 
 {	
-<<<<<<< HEAD
-	other.m_coord.bring_within(m_lattice, 1e-5);
-	Eigen::Vector3d precision_vec;
-	SiteCompare_f compare(m_site, m_precision);
-        return compare(other);
-       
-      //In fractional coordinates, subtract two coords, for each components, distance((x-rounded(x), (y-rounded(y)), (z-rounded(z))) 
-      //Notes: Pointgroup take in lattice rather matrix
-=======
 	Eigen::Vector3d vector1=m_site.get_eigen_coordinate();
     vector1 = convert_to_fractional(m_lattice, vector1);
     Eigen::Vector3d vector2=other.get_eigen_coordinate();
@@ -51,7 +42,6 @@ bool SitePeriodicCompare_f::operator()(Site other)
     }
     Eigen::Vector3d cartesian_distance_vector = convert_to_cartesian(m_lattice, distance_vector);
     return m_site.get_atom()==other.get_atom() && (std::abs(cartesian_distance_vector.norm())<m_precision);
->>>>>>> upstream/covid_wyckoff
 }
 
 Site operator*(const SymOp& transformation, const Site& site)
