@@ -7,10 +7,11 @@
 
 class Subspace
 {
-    Subspace(const Eigen::Matrix3d& basis_col_vectors, const Eigen::Vector3d& offset);
-    std::string formula() const;
-    Eigen::Vector3d offset;
-    Eigen::Matrix3d basis_col_vectors;/* [100    [x   
+    public:
+        Subspace(const Eigen::Matrix3d& basis_col_vectors, const Eigen::Vector3d& offset);
+        std::string formula() const;
+        Eigen::Vector3d offset;
+        Eigen::Matrix3d basis_col_vectors;/* [100    [x   
                                       010 dot y  + [offset] 
                                       001]    z]*/
 
@@ -61,6 +62,8 @@ Eigen::Matrix4d make_symop_4dmatrix(SymOp input_op);
 Eigen::Matrix4d make_reynolds_operator(PeriodicGroup subgroup);
 
 Subspace find_invariant_subspace(SymGroup<SymOp, BinarySymOpPeriodicCompare_f, BinarySymOpPeriodicMultiplier_f> subgroup);
+
+Subspace operator*(const SymOp& lhs, const Subspace& rhs);
 
 std::vector<Subspace> find_symmetrically_equivalent_wyckoff_positions(std::vector<SymOp> coset, Subspace wyckoff_position);
 

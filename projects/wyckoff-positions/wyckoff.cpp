@@ -40,3 +40,25 @@ Eigen::Matrix4d make_reynolds_operator(PeriodicGroup subgroup){
     average_op=average_op/subgroup.operations().size();
     return average_op;
 }
+
+/*Subspace find_invariant_subspace(PeriodicGroup subgroup){
+ return;
+}*/
+
+Subspace operator*(const SymOp& lhs, const Subspace& rhs)
+{
+    Eigen::Matrix3d basis_vectors= lhs.get_cart_matrix() * rhs.basis_col_vectors;
+    Eigen::Vector3d offset_vector= lhs.get_cart_matrix()* rhs.offset+lhs.get_translation();
+    Subspace product_wycoff_position(basis_vectors, offset_vector);
+    return product_wycoff_position;
+}
+
+std::vector<Subspace> find_symmetrically_equivalent_wyckoff_positions(std::vector<SymOp> coset, Subspace wyckoff_position)
+{
+    std::vector<Subspace> equivalent_wyckoff_positions;
+    equivalent_wyckoff_positions.push_back(wyckoff_position);
+    for( SymOp symop : coset){
+        equivalent_wyckoff_positions.push_back(symop*wyckoff_position);
+    }
+    return equivalent_wyckoff_positions;
+}

@@ -125,16 +125,35 @@ bool test_make_reynolds_operator(double tol)
     return average_matrix.isApprox(expected_average, tol);
 }
 
-bool test_find_invariant_subspace() { return true; }
+bool test_find_invariant_subspace() { return false; }
 
-bool test_find_symmetrically_equivalent_wyckoff_positions()
+//test for known subgroup without translation
+/* test for known subgroup with translation
+ * test for simple factor group (ie cubic)
+ * test for harder factor group (hexagonal and diamond)
+ */
+std::vector<Subspace> load_c6_wyckoff_positions()
 {
-    /*make wyckoff position
-     * make factor group?
-     * find subgroup
-     * find coset
-     * find_symetrically_equvalent_poitns
-     * check list vs expected
+    std::vector<Subspace> wyckoff_positions;
+    return wyckoff_positions;
+};
+
+bool test_find_symmetrically_equivalent_wyckoff_positions( double tol)
+{
+    
+    PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
+    PeriodicGroup identity_group = make_identity_group(tol);
+    std::vector<SymOp> coset = find_coset(rotation_60_group, identity_group);
+    
+    Subspace wyckoff_prototype = find_invariant_subspace(identity_group);
+    std::vector<Subspace> wyckoff_e = find_symmetrically_equivalent_wyckoff_positions(coset, wyckoff_prototype);
+
+    if (wyckoff_e.size()!= rotation_60_group.operations().size()){
+        return false;}
+    std::vector<Subspace> expected_wyckoff_positions= load_c6_wyckoff_positions();
+
+    /* should check is we have the right number of wycoff positions
+     * that they are the list of wycoff positions expected (check against list from bilbao with find if)
      */
     return true;
 }
