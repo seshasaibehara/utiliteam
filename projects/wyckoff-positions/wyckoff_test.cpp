@@ -126,7 +126,7 @@ bool test_make_reynolds_operator(double tol)
 }
 
 bool test_find_invariant_subspace() { return false; }
-
+//can we test a rotation axis group with diagonal axis??
 //test for known subgroup without translation
 /* test for known subgroup with translation
  * test for simple factor group (ie cubic)
