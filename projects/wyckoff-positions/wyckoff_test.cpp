@@ -146,6 +146,7 @@ bool test_find_invariant_subspace(double tol)
     expected_basis_col_matrix << 0, 0, 0, 0, 0, 0, 0, 0, 1;
     PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
     Subspace invariant_subspace = find_invariant_subspace(rotation_60_group);
+    std::cout << invariant_subspace.formula() << std::endl;
     return expected_basis_col_matrix.isApprox(invariant_subspace.basis_col_matrix());
 }
 // can we test a rotation axis group with diagonal axis??

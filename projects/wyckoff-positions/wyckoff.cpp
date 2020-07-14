@@ -31,6 +31,36 @@ Subspace Subspace::operator*(const SymOp& lhs)
     return product_wycoff_position;
 }
 
+std::string Subspace::formula() const
+{
+    double tol = 1e-5;
+    std::string formula = "{";
+    std::vector<std::string> xyz = {"x", "y", "z"};
+
+    for (int i = 0; i < 3; ++i)
+    {
+        std::string temp_string;
+        for (int j = 0; j < 3; ++j)
+        {
+            if (std::abs(this->m_basis_col_matrix(j, i)) > tol)
+            {
+                std::string sign = this->m_basis_col_matrix(j, i) > 0 ? "+" : "";
+                temp_string += sign + std::to_string(this->m_basis_col_matrix(j, i)) + xyz[j];
+            }
+        }
+        if (temp_string.size() == 0)
+        {
+            temp_string = "0";
+        }
+        formula += temp_string + ", ";
+    }
+
+    formula.pop_back();
+    formula.pop_back();
+    formula += "}";
+    return formula;
+}
+
 std::vector<SymOp> find_coset(PeriodicGroup factor_group, PeriodicGroup subgroup)
 {
     /*finds the coset to a subgroup in a factor group and returns it as
