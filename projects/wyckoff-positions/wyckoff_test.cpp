@@ -8,7 +8,7 @@ bool test_wyckoff_construction() { return true; }
 
 PeriodicGroup make_identity_group(double tol)
 {
-    Eigen::Matrix3d identity_matrix=Eigen::Matrix3d::Identity();
+    Eigen::Matrix3d identity_matrix = Eigen::Matrix3d::Identity();
     Lattice identity_lattice(identity_matrix.col(0), identity_matrix.col(1), identity_matrix.col(2));
     BinarySymOpPeriodicCompare_f symop_comparator(identity_lattice, tol);
     BinarySymOpPeriodicMultiplier_f symop_multiplier(identity_lattice, tol);
@@ -18,7 +18,7 @@ PeriodicGroup make_identity_group(double tol)
 
 PeriodicGroup make_rotation_60_group(double tol)
 {
-    Eigen::Matrix3d identity_matrix=Eigen::Matrix3d::Identity();
+    Eigen::Matrix3d identity_matrix = Eigen::Matrix3d::Identity();
     Lattice identity_lattice(identity_matrix.col(0), identity_matrix.col(1), identity_matrix.col(2));
     BinarySymOpPeriodicCompare_f symop_comparator(identity_lattice, tol);
     BinarySymOpPeriodicMultiplier_f symop_multiplier(identity_lattice, tol);
@@ -31,7 +31,8 @@ bool test_find_coset(double tol)
     /*    make a rotation group
      *    make identity group
      *    find coset of identity group in rotations group
-     *    should be length rotation group -1, and not contain identity, and contain all other elements of rotation group.*/
+     *    should be length rotation group -1, and not contain identity, and contain all other elements of rotation
+     * group.*/
 
     PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
     PeriodicGroup identity_group = make_identity_group(tol);
@@ -58,7 +59,9 @@ bool test_find_coset(double tol)
     // Check if every coset element is in larger group(factor group)
     for (SymOp coset_symop : coset)
     {
-        auto coset_compare = [coset_symop, symop_comparator](SymOp input_symop) { return symop_comparator(coset_symop, input_symop); };
+        auto coset_compare = [coset_symop, symop_comparator](SymOp input_symop) {
+            return symop_comparator(coset_symop, input_symop);
+        };
         if (std::find_if(rotation_60_group.operations().begin(), rotation_60_group.operations().end(), coset_compare) ==
             rotation_60_group.operations().end())
         {
@@ -76,9 +79,9 @@ bool test_make_SymOp4dMatrix()
      * check all elements
      */
     Eigen::Matrix3d test_matrix;
-    test_matrix<<1, 0, 0, 0, -1, 0, 0, 0, 1;
+    test_matrix << 1, 0, 0, 0, -1, 0, 0, 0, 1;
     Eigen::Vector3d test_translation;
-    test_translation<<.25, .25, .25;
+    test_translation << .25, .25, .25;
     SymOp test_input_symop(test_matrix, test_translation);
     Eigen::Matrix4d symop_4d = make_symop_4dmatrix(test_input_symop);
     for (int i = 0; i < 3; i++)
@@ -93,19 +96,22 @@ bool test_make_SymOp4dMatrix()
     }
     for (int i = 0; i < 3; i++)
     {
-        if (test_translation(i) != symop_4d(i,3))
+        if (test_translation(i) != symop_4d(i, 3))
         {
             return false;
         }
     }
     for (int i = 0; i < 3; i++)
     {
-        if (i < 3 && symop_4d(3,i) != 0)
+        if (i < 3 && symop_4d(3, i) != 0)
         {
             return false;
         }
     }
-    if (symop_4d(3,3) != 1){ return false;}
+    if (symop_4d(3, 3) != 1)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -125,9 +131,25 @@ bool test_make_reynolds_operator(double tol)
     return average_matrix.isApprox(expected_average, tol);
 }
 
-bool test_find_invariant_subspace() { return false; }
-//can we test a rotation axis group with diagonal axis??
-//test for known subgroup without translation
+bool test_make_reynolds_operator_sha(double tol)
+{
+    Eigen::Matrix3d expected_average;
+    expected_average << 0, 0, 0, 0, 0, 0, 0, 0, 1;
+    PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
+    Eigen::Matrix3d average_matrix = make_reynolds_operator_sha(rotation_60_group);
+    return average_matrix.isApprox(expected_average, tol);
+}
+
+bool test_find_invariant_subspace(double tol)
+{
+    Eigen::Matrix3d expected_basis_col_matrix;
+    expected_basis_col_matrix << 0, 0, 0, 0, 0, 0, 0, 0, 1;
+    PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
+    Subspace invariant_subspace = find_invariant_subspace(rotation_60_group);
+    return expected_basis_col_matrix.isApprox(invariant_subspace.basis_col_matrix());
+}
+// can we test a rotation axis group with diagonal axis??
+// test for known subgroup without translation
 /* test for known subgroup with translation
  * test for simple factor group (ie cubic)
  * test for harder factor group (hexagonal and diamond)
@@ -138,19 +160,21 @@ std::vector<Subspace> load_c6_wyckoff_positions()
     return wyckoff_positions;
 };
 
-bool test_find_symmetrically_equivalent_wyckoff_positions( double tol)
+bool test_find_symmetrically_equivalent_wyckoff_positions(double tol)
 {
-    
+
     PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
     PeriodicGroup identity_group = make_identity_group(tol);
     std::vector<SymOp> coset = find_coset(rotation_60_group, identity_group);
-    
+
     Subspace wyckoff_prototype = find_invariant_subspace(identity_group);
     std::vector<Subspace> wyckoff_e = find_symmetrically_equivalent_wyckoff_positions(coset, wyckoff_prototype);
 
-    if (wyckoff_e.size()!= rotation_60_group.operations().size()){
-        return false;}
-    std::vector<Subspace> expected_wyckoff_positions= load_c6_wyckoff_positions();
+    if (wyckoff_e.size() != rotation_60_group.operations().size())
+    {
+        return false;
+    }
+    std::vector<Subspace> expected_wyckoff_positions = load_c6_wyckoff_positions();
 
     /* should check is we have the right number of wycoff positions
      * that they are the list of wycoff positions expected (check against list from bilbao with find if)
@@ -162,12 +186,12 @@ int main()
 {
     double tol = 1e-6;
     /* all the tests above*/
-   // EXPECT_TRUE(//test_wyckoff_construction, "Construction of Wyckoff class");
+    // EXPECT_TRUE(//test_wyckoff_construction, "Construction of Wyckoff class");
     EXPECT_TRUE(test_make_SymOp4dMatrix(), "Convert SymOp to 4d Matrix");
     EXPECT_TRUE(test_find_coset(tol), "Generate Expected Coset");
     EXPECT_TRUE(test_make_reynolds_operator(tol), "Generate Reynolds operator");
-    //EXPECT_TRUE(test_find_invariant_subspace, "Find the expected invariant subspace of subgroup");
+    EXPECT_TRUE(test_make_reynolds_operator_sha(tol), "Generate Reynolds operator sha");
+    EXPECT_TRUE(test_find_invariant_subspace(tol), "Find the expected invariant subspace of subgroup");
 
     return 0;
 }
-
