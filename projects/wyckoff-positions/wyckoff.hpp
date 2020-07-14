@@ -27,14 +27,13 @@ private:
 };
 
 // Subspace operator*(const SymOp& lhs, const Subspace& rhs);
-
 std::vector<SymOp> find_coset(PeriodicGroup factor_group, PeriodicGroup subgroup);
 
 Eigen::Matrix4d make_symop_4dmatrix(SymOp input_op);
 
 // Reynolds?
-Eigen::Matrix4d make_reynolds_operator(PeriodicGroup subgroup);
-Eigen::Matrix3d make_reynolds_operator_sha(PeriodicGroup subgroup);
+Eigen::Matrix4d make_4d_reynolds_operator(PeriodicGroup subgroup);
+Eigen::Matrix3d make_3d_reynolds_operator(PeriodicGroup subgroup);
 /*template this-->(need begin and end iterator)? vector of symops?*/
 Subspace find_invariant_subspace(PeriodicGroup subgroup);
 

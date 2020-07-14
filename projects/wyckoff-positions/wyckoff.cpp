@@ -69,7 +69,7 @@ Eigen::Matrix4d make_symop_4dmatrix(SymOp input_symop)
     return symop_4d;
 }
 
-Eigen::Matrix4d make_reynolds_operator(PeriodicGroup subgroup)
+Eigen::Matrix4d make_4d_reynolds_operator(PeriodicGroup subgroup)
 {
     Eigen::Matrix4d average_op = Eigen::Matrix4d::Zero();
     for (SymOp sym_op : subgroup.operations())
@@ -92,7 +92,7 @@ Eigen::Matrix4d make_reynolds_operator(PeriodicGroup subgroup)
 //    return product_wycoff_position;
 //}
 
-Eigen::Matrix3d make_reynolds_operator_sha(PeriodicGroup subgroup)
+Eigen::Matrix3d make_3d_reynolds_operator(PeriodicGroup subgroup)
 {
     Eigen::Matrix3d average_op = Eigen::Matrix3d::Zero();
     for (const auto& sym_op : subgroup.operations())
@@ -108,7 +108,7 @@ Subspace find_invariant_subspace(PeriodicGroup subgroup)
 {
     // TODO: How is tolerance is being dealt? Any global variable to use or should it be an input arg?
     double tol = 1e-5;
-    Eigen::Matrix3d reynolds_operator = make_reynolds_operator_sha(subgroup);
+    Eigen::Matrix3d reynolds_operator = make_3d_reynolds_operator(subgroup);
     Eigen::EigenSolver<Eigen::Matrix3d> eigen_solver(reynolds_operator);
     Eigen::VectorXcd eigen_values = eigen_solver.eigenvalues();
     Eigen::MatrixXcd eigen_vectors = eigen_solver.eigenvectors();

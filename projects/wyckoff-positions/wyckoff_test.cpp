@@ -127,16 +127,16 @@ bool test_make_reynolds_operator(double tol)
     /*if the translation was not 000, would this move the axis from the 00z?
      */
     PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
-    Eigen::Matrix4d average_matrix = make_reynolds_operator(rotation_60_group);
+    Eigen::Matrix4d average_matrix = make_4d_reynolds_operator(rotation_60_group);
     return average_matrix.isApprox(expected_average, tol);
 }
 
-bool test_make_reynolds_operator_sha(double tol)
+bool test_make_3d_reynolds_operator(double tol)
 {
     Eigen::Matrix3d expected_average;
     expected_average << 0, 0, 0, 0, 0, 0, 0, 0, 1;
     PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
-    Eigen::Matrix3d average_matrix = make_reynolds_operator_sha(rotation_60_group);
+    Eigen::Matrix3d average_matrix = make_3d_reynolds_operator(rotation_60_group);
     return average_matrix.isApprox(expected_average, tol);
 }
 
@@ -189,8 +189,8 @@ int main()
     // EXPECT_TRUE(//test_wyckoff_construction, "Construction of Wyckoff class");
     EXPECT_TRUE(test_make_SymOp4dMatrix(), "Convert SymOp to 4d Matrix");
     EXPECT_TRUE(test_find_coset(tol), "Generate Expected Coset");
-    EXPECT_TRUE(test_make_reynolds_operator(tol), "Generate Reynolds operator");
-    EXPECT_TRUE(test_make_reynolds_operator_sha(tol), "Generate Reynolds operator sha");
+    EXPECT_TRUE(test_make_reynolds_operator(tol), "Generate 4d Reynolds operator");
+    EXPECT_TRUE(test_make_3d_reynolds_operator(tol), "Generate 3d Reynolds operator");
     EXPECT_TRUE(test_find_invariant_subspace(tol), "Find the expected invariant subspace of subgroup");
 
     return 0;
