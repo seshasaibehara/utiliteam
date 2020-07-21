@@ -41,6 +41,9 @@ Subspace find_invariant_subspace(PeriodicGroup subgroup);
 
 std::vector<Subspace> find_symmetrically_equivalent_wyckoff_positions(std::vector<SymOp> coset,
                                                                       Subspace wyckoff_position);
+bool subspaces_are_equal(Subspace lhs, Subspace rhs, double tol);
+
+bool wyckoff_positions_are_equal(std::vector<Subspace> lhs, std::vector<Subspace> rhs, double tol);
 
 // coordinate.cpp has symop*vector, on the utiliteam/find_interstitial/ on  github
 
@@ -53,9 +56,6 @@ std::vector<Subspace> find_symmetrically_equivalent_wyckoff_positions(std::vecto
  typedef std::vector<std::vector<Subspace>> WyckoffList
  * bool is_wyckoff_unique(WyckoffList group_wyckoff);
  * 
- * bool subspaces_are_equal(Subspace lhs, Subspace rhs, tol);
- * bool wyckoff_positions_are_equal(std::vector<Subspace> lhs, std::vecto<Subspace> rhs, tol);
- *
  * WyckoffList extended_wyckoff_list generate_translation_equivalent_wyckoff_lists(WyckoffList group_wyckoff_list);
  * 
  * void intersect_wyckoff_positions(WyckoffList extended_wyckoff_list, WyckoffList group_wyckoff_list);

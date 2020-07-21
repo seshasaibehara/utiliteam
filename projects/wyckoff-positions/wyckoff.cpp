@@ -172,3 +172,14 @@ std::vector<Subspace> find_symmetrically_equivalent_wyckoff_positions(std::vecto
     }
     return equivalent_wyckoff_positions;
 }
+
+bool subspaces_are_equal(Subspace lhs, Subspace rhs, double tol)
+{
+    return (lhs.basis_col_matrix().isApprox(rhs.basis_col_matrix(), tol) && lhs.offset().isApprox(rhs.offset(), tol));
+
+}
+
+bool wyckoff_positions_are_equal(std::vector<Subspace> lhs, std::vector<Subspace> rhs, double tol)
+{ //TODO: 
+    return false;
+}

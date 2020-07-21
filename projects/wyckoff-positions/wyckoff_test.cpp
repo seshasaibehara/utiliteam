@@ -4,7 +4,20 @@
 #include "../../submodules/eigen-git-mirror/Eigen/Dense"
 #include "../avdv-factor-group/tests.hpp"
 
-bool test_wyckoff_construction() { return true; }
+bool test_wyckoff_construction() {
+    Eigen::Vector3d basis_vector1{0,0,1};
+    Eigen::Vector3d basis_vector2{0,0,0};
+    Eigen::Vector3d basis_vector3{1,0,0};
+    Eigen::Vector3d offset{0.25, 0.25,0};
+
+    Subspace subspace1=Subspace(basis_vector1,basis_vector2, basis_vector3, offset);
+    Eigen::Matrix3d expected_basis_matrix;
+    expected_basis_matrix.col(0)=basis_vector1;
+    expected_basis_matrix.col(1)=basis_vector2;
+    expected_basis_matrix.col(2)=basis_vector3;
+    
+    return (expected_basis_matrix==subspace1.basis_col_matrix() && offset==subspace1.offset()); 
+}
 
 PeriodicGroup make_identity_group(double tol)
 {
@@ -165,10 +178,33 @@ std::vector<Subspace> load_c6_wyckoff_positions()
     return wyckoff_positions;
 };
 
-bool test_subspace_compare(double tol)
+bool test_subspace_compare_same(double tol)
 { 
 //TODO: test subspace comparison function
-    return false;
+
+    Eigen::Vector3d basis_vector1{0,0,1};
+    Eigen::Vector3d basis_vector2{0,0,0};
+    Eigen::Vector3d basis_vector3{1,0,0};
+    Eigen::Vector3d offset{0.25, 0.25,0};
+
+    Subspace subspace1=Subspace(basis_vector1,basis_vector2, basis_vector3, offset);
+
+    return subspaces_are_equal(subspace1, subspace1, tol);
+}
+
+bool test_subspace_compare_different(double tol)
+{ 
+//TODO: test subspace comparison function
+
+    Eigen::Vector3d basis_vector1{0,0,1};
+    Eigen::Vector3d basis_vector2{0,0,0};
+    Eigen::Vector3d basis_vector3{1,0,0};
+    Eigen::Vector3d offset{0.25, 0.25,0};
+
+    Subspace subspace1=Subspace(basis_vector1,basis_vector2, basis_vector3, offset);
+    Subspace subspace2=Subspace(basis_vector2,basis_vector2, basis_vector3, offset);
+
+    return !subspaces_are_equal(subspace1, subspace2, tol);
 }
 
 bool test_find_symmetrically_equivalent_wyckoff_positions(double tol)
@@ -233,7 +269,8 @@ int main()
     EXPECT_TRUE(test_find_coset(tol), "Generate Expected Coset");
     EXPECT_TRUE(test_make_reynolds_operator(tol), "Generate 4d Reynolds operator");
     EXPECT_TRUE(test_make_3d_reynolds_operator(tol), "Generate 3d Reynolds operator");
-    EXPECT_TRUE(test_subspace_compare(tol), "Subspace compare works"); 
+    EXPECT_TRUE(test_subspace_compare_same(tol), "Subspace compare same subspaces works"); 
+    EXPECT_TRUE(test_subspace_compare_different(tol), "Subspace compare different subspaces works"); 
     EXPECT_TRUE(test_find_invariant_subspace(tol), "Find the expected invariant subspace of subgroup");
     EXPECT_TRUE(test_wyckoff_position_compare(tol), "Wyckoff Positions Comparison");
     EXPECT_TRUE(test_cubic_point_group_wyckoff_positions(tol), "Generated expected cubic point group");
