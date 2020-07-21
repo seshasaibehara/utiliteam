@@ -19,6 +19,12 @@ bool test_wyckoff_construction() {
     return (expected_basis_matrix==subspace1.basis_col_matrix() && offset==subspace1.offset()); 
 }
 
+Eigen::Matrix3d make_x_rotation_matrix(double degrees) 
+{
+    Eigen::AngleAxisd rotation_generator(degrees * M_PI / 180.0, Eigen::Vector3d(1, 0, 0));
+    return rotation_generator.matrix();
+}
+
 PeriodicGroup make_identity_group(double tol)
 {
     Eigen::Matrix3d identity_matrix = Eigen::Matrix3d::Identity();
@@ -36,6 +42,16 @@ PeriodicGroup make_rotation_60_group(double tol)
     BinarySymOpPeriodicCompare_f symop_comparator(identity_lattice, tol);
     BinarySymOpPeriodicMultiplier_f symop_multiplier(identity_lattice, tol);
     PeriodicGroup rotation_60_group({make_z_rotation_matrix(60)}, symop_comparator, symop_multiplier);
+    return rotation_60_group;
+}
+PeriodicGroup make_rotation_60_group_diagonal(double tol)
+{
+    Eigen::Matrix3d identity_matrix = Eigen::Matrix3d::Identity();
+    Lattice identity_lattice(identity_matrix.col(0), identity_matrix.col(1), identity_matrix.col(2));
+    BinarySymOpPeriodicCompare_f symop_comparator(identity_lattice, tol);
+    BinarySymOpPeriodicMultiplier_f symop_multiplier(identity_lattice, tol);
+    Eigen::Matrix3d rotation_generator_matrix =make_z_rotation_matrix(60)*make_x_rotation_matrix(45);
+    PeriodicGroup rotation_60_group({rotation_generator_matrix}, symop_comparator, symop_multiplier);
     return rotation_60_group;
 }
 
@@ -166,7 +182,14 @@ bool test_find_invariant_subspace(double tol)
 bool test_find_diagonal_axis_invariant_subspace(double tol)
 {
 // TODO: can we test a rotation axis group with diagonal axis??
-    return false;
+    
+    Eigen::Matrix3d expected_basis_col_matrix;
+    expected_basis_col_matrix << 0, 0, 0, 0, 0, 0, 1, 0, 1;
+    PeriodicGroup rotation_60_group_diagonal= make_rotation_60_group_diagonal(tol);
+    Subspace invariant_subspace = find_invariant_subspace(rotation_60_group_diagonal);
+    std::cout << invariant_subspace.formula() << std::endl;
+    std::cout<<invariant_subspace.formula();
+    return expected_basis_col_matrix.isApprox(invariant_subspace.basis_col_matrix());
 }
 
 
@@ -272,6 +295,7 @@ int main()
     EXPECT_TRUE(test_subspace_compare_same(tol), "Subspace compare same subspaces works"); 
     EXPECT_TRUE(test_subspace_compare_different(tol), "Subspace compare different subspaces works"); 
     EXPECT_TRUE(test_find_invariant_subspace(tol), "Find the expected invariant subspace of subgroup");
+    EXPECT_TRUE(test_find_diagonal_axis_invariant_subspace(tol), "Find the expected invariant subspace of subgroup with diagnol rotation axis");
     EXPECT_TRUE(test_wyckoff_position_compare(tol), "Wyckoff Positions Comparison");
     EXPECT_TRUE(test_cubic_point_group_wyckoff_positions(tol), "Generated expected cubic point group");
     return 0;
