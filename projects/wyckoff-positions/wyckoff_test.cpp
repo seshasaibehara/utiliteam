@@ -19,9 +19,14 @@ bool test_wyckoff_construction() {
     return (expected_basis_matrix==subspace1.basis_col_matrix() && offset==subspace1.offset()); 
 }
 
-Eigen::Matrix3d make_x_rotation_matrix(double degrees) 
+Eigen::Matrix3d make_xyz_rotation_matrix(double degrees) 
 {
-    Eigen::AngleAxisd rotation_generator(degrees * M_PI / 180.0, Eigen::Vector3d(1, 0, 0));
+    Eigen::AngleAxisd rotation_generator(degrees * M_PI / 180.0, Eigen::Vector3d(1, 1, 1).normalized());
+    return rotation_generator.matrix();
+}
+Eigen::Matrix3d make_y_rotation_matrix(double degrees) 
+{
+    Eigen::AngleAxisd rotation_generator(degrees * M_PI / 180.0, Eigen::Vector3d(0, 1, 0));
     return rotation_generator.matrix();
 }
 
@@ -50,7 +55,7 @@ PeriodicGroup make_rotation_60_group_diagonal(double tol)
     Lattice identity_lattice(identity_matrix.col(0), identity_matrix.col(1), identity_matrix.col(2));
     BinarySymOpPeriodicCompare_f symop_comparator(identity_lattice, tol);
     BinarySymOpPeriodicMultiplier_f symop_multiplier(identity_lattice, tol);
-    Eigen::Matrix3d rotation_generator_matrix =make_z_rotation_matrix(60)*make_x_rotation_matrix(45);
+    Eigen::Matrix3d rotation_generator_matrix =make_xyz_rotation_matrix(60);
     PeriodicGroup rotation_60_group({rotation_generator_matrix}, symop_comparator, symop_multiplier);
     return rotation_60_group;
 }
@@ -183,12 +188,14 @@ bool test_find_diagonal_axis_invariant_subspace(double tol)
 {
 // TODO: can we test a rotation axis group with diagonal axis??
     
-    Eigen::Matrix3d expected_basis_col_matrix;
-    expected_basis_col_matrix << 0, 0, 0, 0, 0, 0, 1, 0, 1;
+    Eigen::Matrix3d expected_basis_col_matrix=Eigen::Matrix3d::Zero();
+    Eigen::Vector3d expected_basis_col=Eigen::Vector3d::Ones().normalized();
+    expected_basis_col_matrix.col(0)=expected_basis_col;
     PeriodicGroup rotation_60_group_diagonal= make_rotation_60_group_diagonal(tol);
     Subspace invariant_subspace = find_invariant_subspace(rotation_60_group_diagonal);
     std::cout << invariant_subspace.formula() << std::endl;
     std::cout<<invariant_subspace.formula();
+    //TODO change comparison so the order of the vectors don't matter??
     return expected_basis_col_matrix.isApprox(invariant_subspace.basis_col_matrix());
 }
 
@@ -229,6 +236,36 @@ bool test_subspace_compare_different(double tol)
 
     return !subspaces_are_equal(subspace1, subspace2, tol);
 }
+bool test_subspace_compare_diff_order(double tol)
+{ 
+//TODO: test subspace comparison function
+
+    Eigen::Vector3d basis_vector1{0,0,1};
+    Eigen::Vector3d basis_vector2{0,0,0};
+    Eigen::Vector3d basis_vector3{1,0,0};
+    Eigen::Vector3d offset{0.25, 0.25,0};
+
+    Subspace subspace1=Subspace(basis_vector1,basis_vector2, basis_vector3, offset);
+    Subspace subspace2=Subspace(basis_vector2,basis_vector1, basis_vector3, offset);
+
+    return subspaces_are_equal(subspace1, subspace2, tol);
+}
+bool test_subspace_compare_equivalent_basis(double tol)
+{ 
+//TODO: test subspace comparison function
+
+    Eigen::Vector3d basis_vector1{0,0,1};
+    Eigen::Vector3d basis_vector2{0,0,0};
+    Eigen::Vector3d basis_vector3{1,0,0};
+    Eigen::Vector3d basis_vector4{0.5,0,1};
+    Eigen::Vector3d offset{0.25, 0.25,0};
+
+    Subspace subspace1=Subspace(basis_vector1,basis_vector2, basis_vector3, offset);
+    Subspace subspace2=Subspace(basis_vector1,basis_vector2, basis_vector3, offset);
+
+    return subspaces_are_equal(subspace1, subspace2, tol);
+}
+
 
 bool test_find_symmetrically_equivalent_wyckoff_positions(double tol)
 {
@@ -251,8 +288,6 @@ bool test_find_symmetrically_equivalent_wyckoff_positions(double tol)
      */
     return true;
 }
-
-
 
 bool test_wyckoff_position_compare(double tol)
 {

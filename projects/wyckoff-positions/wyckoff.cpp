@@ -12,6 +12,10 @@ Subspace::Subspace(const Eigen::Vector3d& basis_vec_0, const Eigen::Vector3d& ba
         m_basis_col_matrix(i, 1) = basis_vec_1(i);
         m_basis_col_matrix(i, 2) = basis_vec_2(i);
     }
+    //TODO: are basis vectors normalized?
+    //minimize the offset (orthormal to the basis)
+    // order if given axis, or plane could be define in different orders
+    // make sure planes are defined by orthoganol vectors?
 }
 
 Subspace::Subspace(const Eigen::Matrix3d& input_basis_vectors, const Eigen::Vector3d& input_offset)
@@ -42,10 +46,10 @@ std::string Subspace::formula() const
         std::string temp_string;
         for (int j = 0; j < 3; ++j)
         {
-            if (std::abs(this->m_basis_col_matrix(j, i)) > tol)
+            if (std::abs(this->m_basis_col_matrix(i,j)) > tol)
             {
-                std::string sign = this->m_basis_col_matrix(j, i) > 0 ? "+" : "";
-                temp_string += sign + std::to_string(this->m_basis_col_matrix(j, i)) + xyz[j];
+                std::string sign = this->m_basis_col_matrix(i,j) > 0 ? "+" : "";
+                temp_string += sign + std::to_string(this->m_basis_col_matrix(i,j)) + xyz[j];
             }
         }
         if (temp_string.size() == 0)
@@ -177,6 +181,8 @@ bool subspaces_are_equal(Subspace lhs, Subspace rhs, double tol)
 {
     return (lhs.basis_col_matrix().isApprox(rhs.basis_col_matrix(), tol) && lhs.offset().isApprox(rhs.offset(), tol));
 
+    //TODO: insufficient comparison, multiple vectors can span the same subspace
+    // is A is contained in B and B is contained in A then they are the same subspace (projections?)
 }
 
 bool wyckoff_positions_are_equal(std::vector<Subspace> lhs, std::vector<Subspace> rhs, double tol)
