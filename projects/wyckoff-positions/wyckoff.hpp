@@ -20,12 +20,14 @@ public:
                                            010 dot y  + [offset]
                                                001]    z]*/
     Subspace operator*(const SymOp& lhs);
-
+    
 private:
     Eigen::Vector3d m_offset;
     Eigen::Matrix3d m_basis_col_matrix;
 };
 
+
+typedef std::vector<std::vector<Subspace>> WyckoffList;
 // Subspace operator*(const SymOp& lhs, const Subspace& rhs);
 std::vector<SymOp> find_coset(PeriodicGroup factor_group, PeriodicGroup subgroup);
 
@@ -42,4 +44,24 @@ std::vector<Subspace> find_symmetrically_equivalent_wyckoff_positions(std::vecto
 
 // coordinate.cpp has symop*vector, on the utiliteam/find_interstitial/ on  github
 
+/*
+ * can make a cyclic subgroup option for generate_subgroups, default not just cyclic.
+ * 
+ * OtherGroupType center_subgroup(PeriodicGroup cyclic_subgroup);
+ * (test that this will work)
+ *
+ typedef std::vector<std::vector<Subspace>> WyckoffList
+ * bool is_wyckoff_unique(WyckoffList group_wyckoff);
+ * 
+ * bool subspaces_are_equal(Subspace lhs, Subspace rhs, tol);
+ * bool wyckoff_positions_are_equal(std::vector<Subspace> lhs, std::vecto<Subspace> rhs, tol);
+ *
+ * WyckoffList extended_wyckoff_list generate_translation_equivalent_wyckoff_lists(WyckoffList group_wyckoff_list);
+ * 
+ * void intersect_wyckoff_positions(WyckoffList extended_wyckoff_list, WyckoffList group_wyckoff_list);
+ *
+ * WyckoffList wyckoff_positions generate_point_group_wyckoff_position(PeriodicGroup point_group);
+ *
+ * WyckoffList wyckoff_positions generate_space_group_wyckoff_positions(PeriodicGroup point_group);
+ */
 #endif

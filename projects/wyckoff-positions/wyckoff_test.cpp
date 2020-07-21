@@ -149,20 +149,31 @@ bool test_find_invariant_subspace(double tol)
     std::cout << invariant_subspace.formula() << std::endl;
     return expected_basis_col_matrix.isApprox(invariant_subspace.basis_col_matrix());
 }
-// can we test a rotation axis group with diagonal axis??
-// test for known subgroup without translation
-/* test for known subgroup with translation
- * test for simple factor group (ie cubic)
- * test for harder factor group (hexagonal and diamond)
- */
+
+bool test_find_diagonal_axis_invariant_subspace(double tol)
+{
+// TODO: can we test a rotation axis group with diagonal axis??
+    return false;
+}
+
+
+
 std::vector<Subspace> load_c6_wyckoff_positions()
 {
+    //TODO finish to be used below to check rotation group wyckoff positions. two type, the 00z axis and the 6 xyz types
     std::vector<Subspace> wyckoff_positions;
     return wyckoff_positions;
 };
 
+bool test_subspace_compare(double tol)
+{ 
+//TODO: test subspace comparison function
+    return false;
+}
+
 bool test_find_symmetrically_equivalent_wyckoff_positions(double tol)
 {
+// test for known subgroup without translation
 
     PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
     PeriodicGroup identity_group = make_identity_group(tol);
@@ -177,11 +188,41 @@ bool test_find_symmetrically_equivalent_wyckoff_positions(double tol)
     }
     std::vector<Subspace> expected_wyckoff_positions = load_c6_wyckoff_positions();
 
-    /* should check is we have the right number of wycoff positions
-     * that they are the list of wycoff positions expected (check against list from bilbao with find if)
+     /* TODO: check that they are the list of wycoff positions expected (check against list from bilbao with find if)
      */
     return true;
 }
+
+
+
+bool test_wyckoff_position_compare(double tol)
+{
+    /*TODO:Compares vectors of symmetrically equivalent wyckoff positions 
+     * within tolerance and irrespective of order of positions.
+     */
+    return false;
+}
+
+WyckoffList load_expected_cubic_point_group_wyckoff_positions()
+{ //TODO: function to generated expected cubic point group
+    std::vector<std::vector<Subspace>> point_group_wyckoff_list;
+    return point_group_wyckoff_list;
+}
+bool test_cubic_point_group_wyckoff_positions(double tol)
+{   
+ // TODO:test for simple factor group (ie cubic)
+    /* load simple cubic structure from POSCAR,
+     * generate factor group(same as point group) 
+     * generate wyckoff_positions
+     * compare number first to expected number of wyckoff positions
+     * compare to expected wycoff positions
+     * */
+    return false;
+}
+/* TODO:
+ * test for known subgroup with translation
+ * test for harder factor group (hexagonal and diamond)
+ */
 
 int main()
 {
@@ -192,7 +233,9 @@ int main()
     EXPECT_TRUE(test_find_coset(tol), "Generate Expected Coset");
     EXPECT_TRUE(test_make_reynolds_operator(tol), "Generate 4d Reynolds operator");
     EXPECT_TRUE(test_make_3d_reynolds_operator(tol), "Generate 3d Reynolds operator");
+    EXPECT_TRUE(test_subspace_compare(tol), "Subspace compare works"); 
     EXPECT_TRUE(test_find_invariant_subspace(tol), "Find the expected invariant subspace of subgroup");
-
+    EXPECT_TRUE(test_wyckoff_position_compare(tol), "Wyckoff Positions Comparison");
+    EXPECT_TRUE(test_cubic_point_group_wyckoff_positions(tol), "Generated expected cubic point group");
     return 0;
 }
