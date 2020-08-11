@@ -49,6 +49,15 @@ PeriodicGroup make_rotation_60_group(double tol)
     PeriodicGroup rotation_60_group({make_z_rotation_matrix(60)}, symop_comparator, symop_multiplier);
     return rotation_60_group;
 }
+PeriodicGroup make_rotation_group(double degrees, double tol)
+{
+    Eigen::Matrix3d identity_matrix = Eigen::Matrix3d::Identity();
+    Lattice identity_lattice(identity_matrix.col(0), identity_matrix.col(1), identity_matrix.col(2));
+    BinarySymOpPeriodicCompare_f symop_comparator(identity_lattice, tol);
+    BinarySymOpPeriodicMultiplier_f symop_multiplier(identity_lattice, tol);
+    PeriodicGroup rotation_60_group({make_z_rotation_matrix(degrees)}, symop_comparator, symop_multiplier);
+    return rotation_60_group;
+}
 PeriodicGroup make_rotation_60_group_diagonal(double tol)
 {
     Eigen::Matrix3d identity_matrix = Eigen::Matrix3d::Identity();
@@ -272,17 +281,33 @@ bool test_find_symmetrically_equivalent_wyckoff_positions(double tol)
 // test for known subgroup without translation
 
     PeriodicGroup rotation_60_group = make_rotation_60_group(tol);
+    PeriodicGroup rotation_180_group = make_rotation_group(180, tol);
     PeriodicGroup identity_group = make_identity_group(tol);
-    std::vector<SymOp> coset = find_coset(rotation_60_group, identity_group);
+    std::vector<SymOp> coset_identity = find_coset(rotation_60_group, identity_group);
+    std::vector<SymOp> coset_180 = find_coset(rotation_60_group, rotation_180_group);
+    
 
     Subspace wyckoff_prototype = find_invariant_subspace(identity_group);
-    std::vector<Subspace> wyckoff_e = find_symmetrically_equivalent_wyckoff_positions(coset, wyckoff_prototype);
+    Subspace wyckoff_prototype_180 = find_invariant_subspace(rotation_180_group);
+    std::vector<Subspace> wyckoff_e = find_symmetrically_equivalent_wyckoff_positions(coset_identity, wyckoff_prototype);
+    std::vector<Subspace> wyckoff_180 = find_symmetrically_equivalent_wyckoff_positions(coset_180, wyckoff_prototype_180);
 
     if (wyckoff_e.size() != rotation_60_group.operations().size())
     {
         return false;
     }
     std::vector<Subspace> expected_wyckoff_positions = load_c6_wyckoff_positions();
+
+    std::cout<<"identity group wyckoff positions"<<std::endl;
+    for (auto position: wyckoff_e){
+        std::cout<<position.formula()<<std::endl;
+    }
+
+    std::cout<< "size of 180 coset:   "<<coset_180.size()<<std::endl;
+    std::cout<<"180 group wyckoff positions"<<std::endl;
+    for (auto position: wyckoff_180){
+        std::cout<<position.formula()<<std::endl;
+    }
 
      /* TODO: check that they are the list of wycoff positions expected (check against list from bilbao with find if)
      */
@@ -330,6 +355,7 @@ int main()
     EXPECT_TRUE(test_subspace_compare_same(tol), "Subspace compare same subspaces works"); 
     EXPECT_TRUE(test_subspace_compare_different(tol), "Subspace compare different subspaces works"); 
     EXPECT_TRUE(test_find_invariant_subspace(tol), "Find the expected invariant subspace of subgroup");
+    EXPECT_TRUE(test_find_symmetrically_equivalent_wyckoff_positions(tol), "Find and print symmetrically equivalent wyckoff positions");
     EXPECT_TRUE(test_find_diagonal_axis_invariant_subspace(tol), "Find the expected invariant subspace of subgroup with diagnol rotation axis");
     EXPECT_TRUE(test_wyckoff_position_compare(tol), "Wyckoff Positions Comparison");
     EXPECT_TRUE(test_cubic_point_group_wyckoff_positions(tol), "Generated expected cubic point group");

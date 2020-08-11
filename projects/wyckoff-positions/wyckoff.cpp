@@ -2,26 +2,36 @@
 #include "../eigen-git-mirror/Eigen/Eigenvalues"
 #include <cmath>
 
-Subspace::Subspace(const Eigen::Vector3d& basis_vec_0, const Eigen::Vector3d& basis_vec_1,
-                   const Eigen::Vector3d& basis_vec_2, const Eigen::Vector3d& offset)
+Subspace::Subspace(const Eigen::Vector3d& input_vec_0, const Eigen::Vector3d& input_vec_1,
+                   const Eigen::Vector3d& input_vec_2, const Eigen::Vector3d& offset)
     : m_offset(offset)
 {
+//    double tol=1e-6;
+    Eigen::Vector3d basis_vec_0=input_vec_0.normalized();
+    Eigen::Vector3d basis_vec_1=input_vec_1.normalized();
+    Eigen::Vector3d basis_vec_2=input_vec_2.normalized();
+//    int v0=0, v1=0, v2=0;
     for (int i = 0; i < 3; ++i)
     {
         m_basis_col_matrix(i, 0) = basis_vec_0(i);
+//        if (abs(basis_vec_0(i))<tol && v0==0){
+//            v0=1;}
         m_basis_col_matrix(i, 1) = basis_vec_1(i);
         m_basis_col_matrix(i, 2) = basis_vec_2(i);
     }
-    //TODO: are basis vectors normalized?
+
+    //DONE: basis vectors are normalized
     //minimize the offset (orthormal to the basis)
-    // order if given axis, or plane could be define in different orders
-    // make sure planes are defined by orthoganol vectors?
+    //This may still be a different subspace though order if given axis, or plane could be define in different orders
+    //TODO: make sure planes are defined by orthoganol vectors?
 }
 
 Subspace::Subspace(const Eigen::Matrix3d& input_basis_vectors, const Eigen::Vector3d& input_offset)
     : m_basis_col_matrix(input_basis_vectors), m_offset(input_offset)
 {
 }
+
+Subspace::Subspace():m_basis_col_matrix(Eigen::Matrix3d::Zero()), m_offset(Eigen::Vector3d::Zero()){}
 
 Eigen::Matrix3d Subspace::basis_col_matrix() const { return this->m_basis_col_matrix; }
 
@@ -93,7 +103,7 @@ Eigen::Matrix4d make_symop_4dmatrix(SymOp input_symop)
     {
         for (int j = 0; j < 3; j++)
         {
-            symop_4d(i, j) = input_symop.m_cart_matrix(i, j);
+            symop_4d(i, j) = input_symop.get_cart_matrix()(i, j);
         }
     }
     for (int i = 0; i < 3; i++)
@@ -173,7 +183,9 @@ std::vector<Subspace> find_symmetrically_equivalent_wyckoff_positions(std::vecto
     for (SymOp symop : coset)
     {
         equivalent_wyckoff_positions.push_back(wyckoff_position * symop);
+        //TODO: check if in list before push_back
     }
+
     return equivalent_wyckoff_positions;
 }
 

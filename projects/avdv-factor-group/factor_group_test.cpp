@@ -4,11 +4,6 @@
 #include "./io.hpp"
 #include "./tests.hpp"
 
-//Lattice identity_lattice()
-//{
-//    //TODO
-//}
-
 bool test_transform_basis_inversion()
 {
     SymOp inversion(Eigen::Matrix3d::Identity() * -1);
@@ -44,8 +39,7 @@ bool test_transform_basis_size()
 
 bool basis_maps_onto_itself_test(double tol)
 {
-    Eigen::Matrix3d identity=Eigen::Matrix3d::Identity();
-    Lattice lat(identity.col(0),identity.col(1),identity.col(2));
+    Lattice lat(Eigen::Matrix3d::Identity());
     Site na1("Na",Coordinate(Eigen::Vector3d::Zero()));
     Site na2("Na",Coordinate(0.5*Eigen::Vector3d::Ones()));
     Site li1("Li",Coordinate(-0.25*Eigen::Vector3d::Ones()));
@@ -59,8 +53,7 @@ bool basis_maps_onto_itself_test(double tol)
 
 bool basis_maps_onto_itself_periodically(double tol)
 {
-    Eigen::Matrix3d identity=Eigen::Matrix3d::Identity();
-    Lattice lat(identity.col(0),identity.col(1),identity.col(2));
+    Lattice lat(Eigen::Matrix3d::Identity());
     Site na1("Na",Coordinate(Eigen::Vector3d::Zero()));
     Site na2("Na",Coordinate(0.5*Eigen::Vector3d::Ones()));
     Site li1("Li",Coordinate(-0.25*Eigen::Vector3d::Ones()));
@@ -74,8 +67,7 @@ bool basis_maps_onto_itself_periodically(double tol)
 
 bool basis_doesnt_map_onto_itself(double tol)
 {
-    Eigen::Matrix3d identity=Eigen::Matrix3d::Identity();
-    Lattice lat(identity.col(0),identity.col(1),identity.col(2));
+    Lattice lat(Eigen::Matrix3d::Identity());
     Site na1("Na",Coordinate(Eigen::Vector3d::Zero()));
     Site na2("Na",Coordinate(0.5*Eigen::Vector3d::Ones()));
     Site li1("Li",Coordinate(-0.25*Eigen::Vector3d::Ones()));
@@ -86,8 +78,7 @@ bool basis_doesnt_map_onto_itself(double tol)
 
 bool basis_doesnt_map_onto_itself_size_mismatch(double tol)
 {
-    Eigen::Matrix3d identity=Eigen::Matrix3d::Identity();
-    Lattice lat(identity.col(0),identity.col(1),identity.col(2));
+    Lattice lat(Eigen::Matrix3d::Identity());
     Site na1("Na",Coordinate(Eigen::Vector3d::Zero()));
     Site na2("Na",Coordinate(0.5*Eigen::Vector3d::Ones()));
     Site li1("Li",Coordinate(-0.25*Eigen::Vector3d::Ones()));
@@ -153,14 +144,6 @@ bool test_fcc_factor_group(double tol)
     return fg.operations().size()==48;
 }
 
-bool test_hcp_factor_group(double tol)
-{
-    Structure hcp=read_poscar("./test_files/mg.vasp");
-    auto fg=generate_factor_group(hcp, tol);
-    
-    return fg.operations().size()==24;
-}
-
 bool test_FeLi2Se2_factor_group(double tol)
 {
     Structure fcc=read_poscar("./test_files/FeLi2Se2.vasp");
@@ -208,7 +191,7 @@ int main()
 {
     std::cout<<"---- Running Factor Group Tests ----"<<std::endl;
     std::cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<std::endl;
-    double tol= 1e-4;
+    double tol= 1e-6;
     EXPECT_TRUE(test_transform_basis_inversion(), "Transform basis inversion");
     EXPECT_TRUE(test_transform_basis_glide(), "Transform basis glide");
     EXPECT_TRUE(test_transform_basis_size(), "Transform basis size");
@@ -218,7 +201,6 @@ int main()
     EXPECT_TRUE(basis_doesnt_map_onto_itself(tol), "Basis shouldnt map, has different atom types");
     EXPECT_TRUE(generate_translations_works(tol), "Generate translations should generate translations");
     EXPECT_TRUE(test_fcc_factor_group(tol), "FCC factor group has 48 operations");
-    EXPECT_TRUE(test_hcp_factor_group(tol), "hcp factor group has 24 operations");
     EXPECT_TRUE(test_pnb9o25_factor_group(tol), "pnb9o25 factor group has 4 operations");
 //    EXPECT_TRUE(test_FeLi2Se2_factor_group(tol), "FeLi2Se2 factor group has 48 operations");
     EXPECT_TRUE(test_zro2_factor_group(tol), "ZrO2 factor group has 4 operations");

@@ -14,16 +14,19 @@ public:
     Subspace(const Eigen::Vector3d& basis_vec_0, const Eigen::Vector3d& basis_vec_1, const Eigen::Vector3d& basis_vec_2,
              const Eigen::Vector3d& offset);
     Subspace(const Eigen::Matrix3d& basis_col_matrix, const Eigen::Vector3d& offset);
+    Subspace();
+    int get_dimension();
     std::string formula() const; // Sesha suggested we overload the << operator
     Eigen::Vector3d offset() const;
     Eigen::Matrix3d basis_col_matrix() const; /* [100    [x
                                            010 dot y  + [offset]
                                                001]    z]*/
     Subspace operator*(const SymOp& lhs);
-    
-private:
     Eigen::Vector3d m_offset;
     Eigen::Matrix3d m_basis_col_matrix;
+    
+private:
+    int dimension;
 };
 
 
