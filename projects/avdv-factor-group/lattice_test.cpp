@@ -50,5 +50,13 @@ original_translation_near_corner<<-.001, .999, 0;
 Eigen::Vector3d brought_within_translation_near_corner;
 brought_within_translation_near_corner<<.999, 0.999, 0;
 EXPECT_TRUE(bring_within(unit_lattice, 0.0001, original_translation_near_corner).isApprox(brought_within_translation_near_corner, 0.0001), "test the bring within function near corner");
+
+//test bring within near corner
+Eigen::Vector3d original_translation_large;
+original_translation_large<<-9.001, .999, 0;
+Eigen::Vector3d brought_within_translation_large;
+brought_within_translation_large<<.999, 0.999, 0;
+EXPECT_TRUE(bring_within(unit_lattice, 0.0001, original_translation_large).isApprox(brought_within_translation_large, 0.0001), "test the bring within function large");
+
 return 0;
 }

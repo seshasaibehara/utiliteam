@@ -23,6 +23,9 @@ bool SiteCompare_f::operator()(const Site& other) const
 }
 
 
+
+
+
 //Site compare taking into account perioduc boundary conditions
 SitePeriodicCompare_f::SitePeriodicCompare_f(Site site, double prec, const Lattice& unit_cell) : m_site(site), m_precision(prec), m_lattice(unit_cell){
 } 

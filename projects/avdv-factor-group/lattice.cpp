@@ -27,14 +27,18 @@ Eigen::Vector3d bring_within(const Lattice& lattice, double prec, const Eigen::V
 {
     Eigen::Vector3d frac_coords;
     frac_coords = convert_to_fractional(lattice, cart_coord);
-    //frac_coords = lattice.col_vector_matrix().inverse() * get_cart_coordinate(lattice);
     for (int i = 0; i < 3; ++i)
     {
         if (frac_coords(i) < -prec || frac_coords(i) >= 1-prec)		
         {
             frac_coords(i) = frac_coords(i) - floor(frac_coords(i)+prec);
         }
+//        if (frac_coords(i) < 0 || frac_coords(i) >= 1)		
+//        {
+ //           frac_coords(i) = frac_coords(i) - floor(frac_coords(i));
+  //      }
     }
     return lattice.col_vector_matrix() * frac_coords;
+
 }
 

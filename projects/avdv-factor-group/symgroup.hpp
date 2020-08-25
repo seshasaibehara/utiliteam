@@ -60,7 +60,7 @@ std::vector<SymGroup<SymOpType, BinaryCompareType, MultiplyType>> find_subgroups
 template <typename SymOpType, typename BinaryCompareType, typename MultiplyType>
 void SymGroup<SymOpType, BinaryCompareType, MultiplyType>::close_group(std::vector<SymOpType>* operations_ptr, const BinaryCompareType& binary_comparator, MultiplyType multiply_elements)
 {
-    int push_limit = 200;
+    int push_limit = 600;
     int push_count = 0;
 
     std::vector<SymOpType>& operations = *operations_ptr;
