@@ -1,4 +1,4 @@
-//#include "symop_4d.hpp"
+#include "symop_4d.hpp"
 #include "wyckoff.hpp"
 // is there a way to include all the headers in the avdv-factorgroup folder??
 #include "../../submodules/eigen-git-mirror/Eigen/Core"
@@ -348,21 +348,28 @@ bool test_cubic_point_group_wyckoff_positions(double tol)
 
 bool test_sympp_4d_construction()
 {
-    //    Eigen::Matrix3d cart_matrix(2, 0, 0, 0, 2, 0, 0, 0, 2);
-    //    Eigen::Vector3d translation(0.5, 0.5, 0.5);
-    //    Eigen::Matrix4d eigen_4d_matrix(2, 0, 0, 0.5, 0, 2, 0, 0.5, 0, 0, 2, 0.5, 0, 0, 0, 1);
-    //    SymOp sym_op(cart_matrix, translation);
-    //
-    //    Symop_4d symop_4d_matrix_0(cart_matrix, translation);
-    //    Symop_4d symop_4d_matrix_1(eigen_4d_matrix);
-    //    Symop_4d symop_4d_matrix_2(sym_op);
-    //
-    //    //    if (symop_4d_matrix_0.get_matrix().isApprox(eigen_4d_matrix) &&
-    //    //        symop_4d_matrix_1.get_matrix().isApprox(eigen_4d_matrix) &&
-    //    //        symop_4d_matrix_2.get_matrix().isApprox(eigen_4d_matrix))
-    //    //    {
-    //    //        return true;
-    //    //    }
+        Eigen::Matrix3d cart_matrix;
+        cart_matrix<<1, 0, 0, 0, 1, 0, 0, 0, 1;
+        Eigen::Vector3d translation;
+        translation<<0.5, 0.5, 0.5;
+        Eigen::Matrix4d eigen_4d_matrix;
+        eigen_4d_matrix<<1, 0, 0, 0.5, 0, 1, 0, 0.5, 0, 0, 1, 0.5, 0, 0, 0, 1;
+        SymOp sym_op(cart_matrix, translation);
+    
+        Symop_4d symop_4d_matrix_0(cart_matrix, translation);
+        Symop_4d symop_4d_matrix_1(eigen_4d_matrix);
+        Symop_4d symop_4d_matrix_2(sym_op);
+    
+        if (symop_4d_matrix_0.get_matrix().isApprox(eigen_4d_matrix) &&
+                symop_4d_matrix_1.get_matrix().isApprox(eigen_4d_matrix) &&
+                symop_4d_matrix_2.get_matrix().isApprox(eigen_4d_matrix))
+            {
+                return true;
+            }
+        std::cout<<symop_4d_matrix_0.get_matrix()<<std::endl; 
+        std::cout<<symop_4d_matrix_1.get_matrix()<<std::endl; 
+        std::cout<<symop_4d_matrix_2.get_matrix()<<std::endl; 
+
 
     return false;
 }

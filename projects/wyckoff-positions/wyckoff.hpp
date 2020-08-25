@@ -48,9 +48,22 @@ bool subspaces_are_equal(Subspace lhs, Subspace rhs, double tol);
 
 bool wyckoff_positions_are_equal(std::vector<Subspace> lhs, std::vector<Subspace> rhs, double tol);
 
-// coordinate.cpp has symop*vector, on the utiliteam/find_interstitial/ on  github
+////////////////////////
 
-/*
+/* ~~~Ouline of functions needed for new wyckoff alorithm~~~~
+ *
+ * convert symop to fractional coordinates (maybe should be part of symop class, tkae inputs of symop and lattice)
+ * combine all symop in group into M-I matrix
+ * calc the smith normal form (there are some funcitons to this end in LinearAgebra in CASM, not part of eigen
+ * use smith normal form method to calculate wyckoff positions (there are some logic if statements and loops to make sure each one is captured)
+ * compare size of wyckoff orbit to sze of coset to determine if the orbit is kept
+ * WyckoffList wyckoff_positions generate_space_group_wyckoff_positions(PeriodicGroup point_group);
+ */
+
+//////////////////////////////////////////////////////////////
+
+/* ~~THE following should not be necessary given the above algorithm:
+ *
  * can make a cyclic subgroup option for generate_subgroups, default not just cyclic.
  * 
  * OtherGroupType center_subgroup(PeriodicGroup cyclic_subgroup);
@@ -65,6 +78,6 @@ bool wyckoff_positions_are_equal(std::vector<Subspace> lhs, std::vector<Subspace
  *
  * WyckoffList wyckoff_positions generate_point_group_wyckoff_position(PeriodicGroup point_group);
  *
- * WyckoffList wyckoff_positions generate_space_group_wyckoff_positions(PeriodicGroup point_group);
+
  */
 #endif

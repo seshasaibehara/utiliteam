@@ -5,7 +5,7 @@ Symop_4d::Symop_4d(const Eigen::Matrix4d& input_matrix) : symop_matrix(input_mat
 
 Symop_4d::Symop_4d(const Eigen::Matrix3d& cart_matrix, const Eigen::Vector3d& translation)
 {
-    Eigen::Matrix4d symop_matrix = Eigen::Matrix4d::Zero();
+    symop_matrix = Eigen::Matrix4d::Zero();
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
@@ -19,12 +19,12 @@ Symop_4d::Symop_4d(const Eigen::Matrix3d& cart_matrix, const Eigen::Vector3d& tr
     Eigen::Vector3d empty_offset = Eigen::Vector3d::Zero();
 }
 
-Symop_4d::Symop_4d(const SymOp& symop_3d) { Symop_4d(symop_3d.get_cart_matrix(), symop_3d.get_translation()); }
+Symop_4d::Symop_4d(const SymOp& symop_3d):Symop_4d(symop_3d.get_cart_matrix(), symop_3d.get_translation()){}
 
 Subspace Symop_4d::find_invariant_subspace()
 {
     double tol = 1e-6;
-    if (dimension == -1)
+    if (dimension == -2)
     {
         Eigen::Matrix3d basis_matrix = Eigen::Matrix3d::Zero();
         Eigen::Vector3d offset = Eigen::Vector3d::Zero();
@@ -61,7 +61,7 @@ Subspace Symop_4d::find_invariant_subspace()
 
 int Symop_4d::subspace_dimension()
 {
-    if (dimension == 1)
+    if (dimension == -2)
     {
         this->find_invariant_subspace();
     }
