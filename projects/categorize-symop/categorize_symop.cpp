@@ -1,4 +1,5 @@
 #include "categorize_symop.hh" 
+#include <optional>
 #include "./symop_4d.hpp"
 #include <stdexcept>
 
@@ -112,7 +113,10 @@ std::vector<Eigen::Vector3d> eigenvectors_with_positive_unit_eigenvalues(const E
     return output_eigen_vectors;
 }
 
-std::string check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
+enum class SYMOP_TYPE{
+    IDENTITY, INVERSION, GLIDE, SCREW, MIRROR, ROTATION, IMPROPER_ROTATION};
+
+SYMOP_TYPE check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
 { // take in sym_op returns string of op type
     int trace = sym_op.get_cart_matrix().trace();
     std::string type;
@@ -120,13 +124,11 @@ std::string check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
 
     if ((3 - trace < tol))
     {
-        type = "Identity";
-        return type;
+        return SYMOP_TYPE::IDENTITY;
     }
     if (trace + 3 < tol)
     {
-        type = "Inversion";
-        return type;
+        return SYMOP_TYPE::INVERSION;
     }
     std::vector<Eigen::Vector3d> eigen_vectors = eigenvectors_with_positive_unit_eigenvalues(sym_op.get_cart_matrix(), tol);
 //    std::cout<<eigen_vectors<<std::endl;
@@ -135,13 +137,11 @@ std::string check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
     {
         if (has_translation(project_translation_onto_vectors(eigen_vectors, sym_op.get_translation()), lattice, tol))
         {
-            type = "Glide";
-            return type;
+            return SYMOP_TYPE::GLIDE;
         }
         else
         {
-            type = "Mirror";
-            return type;
+            return SYMOP_TYPE::MIRROR;
         }
     }
     else if (eigen_vectors.size() == 1)
@@ -150,51 +150,48 @@ std::string check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
         {
             if (has_translation(project_translation_onto_vectors(eigen_vectors, sym_op.get_translation()), lattice, tol))
             {
-                type = "Screw";
-                return type;
+                return SYMOP_TYPE::SCREW;
             }
             else
             {
-                type = "Rotation";
-                return type;
+                return SYMOP_TYPE::ROTATION;
             }
         }
         else if (abs(det + 1) < tol)
         {
-            type = "Improper rotation";
-            return type;
+            return SYMOP_TYPE::IMPROPER_ROTATION;
         }
         else
         {
-            type = "Error type 1: Type not idenitified!!!";
-            return type;
+            throw std::runtime_error("Error type 1: Type not idenitified!!!");
         }
     }
     else
     {
-        type = "Error type 2: Type not idenitified!!!";
-        return type;
+        throw std::runtime_error("Error type 2: Type not idenitified!!!");
     }
 }
 
-Subspace find_invariant_subspace(Symop_4d symop, Lattice lattice, double tol)
+optional<Subspace> find_invariant_subspace(Symop_4d symop, Lattice lattice, double tol)
 {
     SymOp symop_3d=symop_4d_to_3d(symop);
     if(has_translation(symop_3d.get_translation(), lattice, tol)){// throw error because it has not invariant subspace;
-        throw std::runtime_error("This symop does not have an invariant subspace.");
+        return{};
+       // throw std::runtime_error("This symop does not have an invariant subspace.");
     }
         
-    return symop.invariant_subspace;
+    return symop.find_invariant_subspace();
 }
 
-Subspace find_invariant_subspace(SymOp symop, Lattice lattice, double tol)
+optional<Subspace> find_invariant_subspace(SymOp symop, Lattice lattice, double tol)
 {
     if(has_translation(symop.get_translation(), lattice, tol)){// throw error because it has not invariant subspace;
-        throw std::runtime_error("This symop does not have an invariant subspace.");
+        return{};
+        //throw std::runtime_error("This symop does not have an invariant subspace.");
        
     }
     Symop_4d symop_4d(symop);    
 
-    return symop_4d.invariant_subspace;
+    return symop_4d.find_invariant_subspace();
 }
 

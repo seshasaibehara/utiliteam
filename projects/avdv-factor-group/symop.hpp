@@ -11,12 +11,13 @@ class SymOp
 {
 public:
     SymOp(const Eigen::Matrix3d& cart_matrix, const Eigen::Vector3d& translation={0, 0, 0});
+    SymOp(const Eigen::Matrix4d& full_matrix);
     Eigen::Vector3d get_translation() const;
     Eigen::Matrix3d get_cart_matrix() const;
-
-    Eigen::Matrix3d m_cart_matrix;
+    Eigen::Matrix4d get_combined_matrix() const;
+    
 private:
-
+    Eigen::Matrix3d m_cart_matrix;
     Eigen::Vector3d m_translation;
 };
 
