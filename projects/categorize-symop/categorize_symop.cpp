@@ -1,10 +1,9 @@
-#include "categorize_symop.hh" 
+#include "categorize_symop.hh"
+#include "../avdv-factor-group/lattice.hpp"
+#include "../avdv-factor-group/symop.hpp"
 #include <functional>
 #include <optional>
 #include <stdexcept>
-#include "../wyckoff-positions/wyckoff.hpp"
-#include "../avdv-factor-group/symop.hpp"
-#include "../avdv-factor-group/lattice.hpp"
 
 //#define tol 1e-6
 
@@ -54,7 +53,8 @@ bool has_translation(const Eigen::Vector3d translation, const Lattice lattice_in
     }
 }
 
-Eigen::Vector3d project_translation_onto_vectors(const std::vector<Eigen::Vector3d>& eigen_vectors, Eigen::Vector3d translation)
+Eigen::Vector3d project_translation_onto_vectors(const std::vector<Eigen::Vector3d>& eigen_vectors,
+                                                 Eigen::Vector3d translation)
 {
     // for each eigen vector this call the above project onto vector function and then added these vectors together
     Eigen::Vector3d projected_translation_vector = Eigen::Vector3d::Zero();
@@ -83,34 +83,35 @@ std::vector<Eigen::Vector3d> eigenvectors_with_positive_unit_eigenvalues(const E
     std::vector<Eigen::Vector3d> output_eigen_vectors;
     Eigen::Matrix3<std::complex<double>> eigenvectors = solver.eigenvectors();
 
-    int ct=0;
+    int ct = 0;
     for (int i = 0; i < 3; i++)
     {
-//      std::cout <<eigenvectors.col(i).real()<<std::endl;
+        //      std::cout <<eigenvectors.col(i).real()<<std::endl;
         auto eigenval = eigenvals(i);
-//        std::cout<<eigenval.real()<<std::endl;
+        //        std::cout<<eigenval.real()<<std::endl;
         if (almost_equal(eigenval.real(), 1, tol))
         {
             ct++;
-//            std::cout<<"EigenVal=1 Found!"<<std::endl;
+            //            std::cout<<"EigenVal=1 Found!"<<std::endl;
             Eigen::Vector3d real_eigenvector = eigenvectors.col(i).real();
             output_eigen_vectors.push_back(real_eigenvector);
         }
     }
-    if (ct==0){ 
+    if (ct == 0)
+    {
         for (int i = 0; i < 3; i++)
         {
-//        std::cout <<eigenvectors.col(i).real()<<std::endl;
-          auto eigenval = eigenvals(i);
-//          std::cout<<eigenval.real()<<std::endl;
-          if (almost_equal(eigenval.real(), -1, tol))
-          {
-              ct++;
-//              std::cout<<"EigenVal=1 Found!"<<std::endl;
-              Eigen::Vector3d real_eigenvector = eigenvectors.col(i).real();
-              output_eigen_vectors.push_back(real_eigenvector);
-           }
-         }
+            //        std::cout <<eigenvectors.col(i).real()<<std::endl;
+            auto eigenval = eigenvals(i);
+            //          std::cout<<eigenval.real()<<std::endl;
+            if (almost_equal(eigenval.real(), -1, tol))
+            {
+                ct++;
+                //              std::cout<<"EigenVal=1 Found!"<<std::endl;
+                Eigen::Vector3d real_eigenvector = eigenvectors.col(i).real();
+                output_eigen_vectors.push_back(real_eigenvector);
+            }
+        }
     }
 
     return output_eigen_vectors;
@@ -130,9 +131,10 @@ SYMOP_TYPE check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
     {
         return SYMOP_TYPE::INVERSION;
     }
-    std::vector<Eigen::Vector3d> eigen_vectors = eigenvectors_with_positive_unit_eigenvalues(sym_op.get_cart_matrix(), tol);
-//    std::cout<<eigen_vectors<<std::endl;
-//    std::cout << eigen_vectors.cols() << std::endl;
+    std::vector<Eigen::Vector3d> eigen_vectors =
+        eigenvectors_with_positive_unit_eigenvalues(sym_op.get_cart_matrix(), tol);
+    //    std::cout<<eigen_vectors<<std::endl;
+    //    std::cout << eigen_vectors.cols() << std::endl;
     if (eigen_vectors.size() == 2)
     {
         if (has_translation(project_translation_onto_vectors(eigen_vectors, sym_op.get_translation()), lattice, tol))
@@ -148,7 +150,8 @@ SYMOP_TYPE check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
     {
         if (abs(det - 1) < tol)
         {
-            if (has_translation(project_translation_onto_vectors(eigen_vectors, sym_op.get_translation()), lattice, tol))
+            if (has_translation(project_translation_onto_vectors(eigen_vectors, sym_op.get_translation()), lattice,
+                                tol))
             {
                 return SYMOP_TYPE::SCREW;
             }
@@ -174,40 +177,41 @@ SYMOP_TYPE check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
 
 std::optional<Subspace> find_invariant_subspace(SymOp symop, Lattice lattice, double tol)
 {
-        auto type=check_op_type(symop, lattice, tol);
-        if(type==SYMOP_TYPE::SCREW || type ==SYMOP_TYPE::GLIDE){
-            return;}
-        auto symop_matrix=symop.get_combined_matrix();
-        Eigen::Matrix3d basis_matrix = Eigen::Matrix3d::Zero();
-        Eigen::Vector3d offset = Eigen::Vector3d::Zero();
-        Eigen::EigenSolver<Eigen::Matrix4d> solver(symop_matrix, true);
-        Eigen::Vector4<std::complex<double>> eigenvals = solver.eigenvalues();
-        std::vector<Eigen::Vector4d> output_eigen_vectors;
-        Eigen::Matrix4<std::complex<double>> eigenvectors = solver.eigenvectors();
-        int dimension=0;
-        for (int i = 0; i < 4; i++)
+    auto type = check_op_type(symop, lattice, tol);
+    if (type == SYMOP_TYPE::SCREW || type == SYMOP_TYPE::GLIDE)
+    {
+        return {};
+    }
+    auto symop_matrix = symop.get_combined_matrix();
+    Eigen::Matrix3d basis_matrix = Eigen::Matrix3d::Zero();
+    Eigen::Vector3d offset = Eigen::Vector3d::Zero();
+    Eigen::EigenSolver<Eigen::Matrix4d> solver(symop_matrix, true);
+    Eigen::Vector4<std::complex<double>> eigenvals = solver.eigenvalues();
+    std::vector<Eigen::Vector4d> output_eigen_vectors;
+    Eigen::Matrix4<std::complex<double>> eigenvectors = solver.eigenvectors();
+    int dimension = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        if ((1 - abs(eigenvals(i).real())) < tol)
         {
-            if ((1 - abs(eigenvals(i).real())) < tol)
+            if (1 - abs(eigenvectors.col(i)(3)) < tol)
             {
-                if (1 - abs(eigenvectors.col(i)(3)) < tol)
+                for (int k = 0; k < 3; k++)
                 {
-                    for (int k = 0; k < 3; k++)
-                    {
-                        offset(k) = eigenvectors.col(i)(k).real();
-                    }
-                }
-                else
-                {
-                    for (int k = 0; k < 3; k++)
-                    {
-                        basis_matrix(k, dimension) = eigenvectors(k, i).real();
-                    }
-                    dimension++;
+                    offset(k) = eigenvectors.col(i)(k).real();
                 }
             }
+            else
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    basis_matrix(k, dimension) = eigenvectors(k, i).real();
+                }
+                dimension++;
+            }
         }
-        Subspace invariant_subspace = Subspace(basis_matrix, offset);
-    
+    }
+    Subspace invariant_subspace = Subspace(basis_matrix, offset);
+
     return invariant_subspace;
 }
-
