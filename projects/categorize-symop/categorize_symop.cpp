@@ -1,7 +1,10 @@
 #include "categorize_symop.hh" 
+#include <functional>
 #include <optional>
-#include "./symop_4d.hpp"
 #include <stdexcept>
+#include "../wyckoff-positions/wyckoff.hpp"
+#include "../avdv-factor-group/symop.hpp"
+#include "../avdv-factor-group/lattice.hpp"
 
 //#define tol 1e-6
 
@@ -172,26 +175,42 @@ SYMOP_TYPE check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
     }
 }
 
-optional<Subspace> find_invariant_subspace(Symop_4d symop, Lattice lattice, double tol)
+std::optional<Subspace> find_invariant_subspace(SymOp symop, Lattice lattice, double tol)
 {
-    SymOp symop_3d=symop_4d_to_3d(symop);
-    if(has_translation(symop_3d.get_translation(), lattice, tol)){// throw error because it has not invariant subspace;
-        return{};
-       // throw std::runtime_error("This symop does not have an invariant subspace.");
-    }
-        
-    return symop.find_invariant_subspace();
-}
-
-optional<Subspace> find_invariant_subspace(SymOp symop, Lattice lattice, double tol)
-{
-    if(has_translation(symop.get_translation(), lattice, tol)){// throw error because it has not invariant subspace;
-        return{};
-        //throw std::runtime_error("This symop does not have an invariant subspace.");
-       
-    }
-    Symop_4d symop_4d(symop);    
-
-    return symop_4d.find_invariant_subspace();
+        auto type=check_op_type(symop, lattice, tol);
+        if(type==SYMOP_TYPE::SCREW || type ==SYMOP_TYPE::GLIDE){
+            return;}
+        auto symop_matrix=symop.get_4d__matrix();
+        Eigen::Matrix3d basis_matrix = Eigen::Matrix3d::Zero();
+        Eigen::Vector3d offset = Eigen::Vector3d::Zero();
+        Eigen::EigenSolver<Eigen::Matrix4d> solver(symop_matrix, true);
+        Eigen::Vector4<std::complex<double>> eigenvals = solver.eigenvalues();
+        std::vector<Eigen::Vector4d> output_eigen_vectors;
+        Eigen::Matrix4<std::complex<double>> eigenvectors = solver.eigenvectors();
+        int dimension=0;
+        for (int i = 0; i < 4; i++)
+        {
+            if ((1 - abs(eigenvals(i).real())) < tol)
+            {
+                if (1 - abs(eigenvectors.col(i)(3)) < tol)
+                {
+                    for (int k = 0; k < 3; k++)
+                    {
+                        offset(k) = eigenvectors.col(i)(k).real();
+                    }
+                }
+                else
+                {
+                    for (int k = 0; k < 3; k++)
+                    {
+                        basis_matrix(k, dimension) = eigenvectors(k, i).real();
+                    }
+                    dimension++;
+                }
+            }
+        }
+        Subspace invariant_subspace = Subspace(basis_matrix, offset);
+    
+    return invariant_subspace;
 }
 
