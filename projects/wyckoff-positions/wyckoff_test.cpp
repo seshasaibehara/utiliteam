@@ -128,7 +128,8 @@ bool test_make_SymOp4dMatrix()
     Eigen::Vector3d test_translation;
     test_translation << .25, .25, .25;
     SymOp test_input_symop(test_matrix, test_translation);
-    Eigen::Matrix4d symop_4d = make_symop_4dmatrix(test_input_symop);
+    //    Eigen::Matrix4d symop_4d = make_symop_4dmatrix(test_input_symop);
+    Eigen::Matrix4d symop_4d = test_input_symop.get_combined_matrix();
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
@@ -348,28 +349,27 @@ bool test_cubic_point_group_wyckoff_positions(double tol)
 
 bool test_sympp_4d_construction()
 {
-        Eigen::Matrix3d cart_matrix;
-        cart_matrix<<1, 0, 0, 0, 1, 0, 0, 0, 1;
-        Eigen::Vector3d translation;
-        translation<<0.5, 0.5, 0.5;
-        Eigen::Matrix4d eigen_4d_matrix;
-        eigen_4d_matrix<<1, 0, 0, 0.5, 0, 1, 0, 0.5, 0, 0, 1, 0.5, 0, 0, 0, 1;
-        SymOp sym_op(cart_matrix, translation);
-    
-        Symop_4d symop_4d_matrix_0(cart_matrix, translation);
-        Symop_4d symop_4d_matrix_1(eigen_4d_matrix);
-        Symop_4d symop_4d_matrix_2(sym_op);
-    
-        if (symop_4d_matrix_0.get_matrix().isApprox(eigen_4d_matrix) &&
-                symop_4d_matrix_1.get_matrix().isApprox(eigen_4d_matrix) &&
-                symop_4d_matrix_2.get_matrix().isApprox(eigen_4d_matrix))
-            {
-                return true;
-            }
-        std::cout<<symop_4d_matrix_0.get_matrix()<<std::endl; 
-        std::cout<<symop_4d_matrix_1.get_matrix()<<std::endl; 
-        std::cout<<symop_4d_matrix_2.get_matrix()<<std::endl; 
+    Eigen::Matrix3d cart_matrix;
+    cart_matrix << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+    Eigen::Vector3d translation;
+    translation << 0.5, 0.5, 0.5;
+    Eigen::Matrix4d eigen_4d_matrix;
+    eigen_4d_matrix << 1, 0, 0, 0.5, 0, 1, 0, 0.5, 0, 0, 1, 0.5, 0, 0, 0, 1;
+    SymOp sym_op(cart_matrix, translation);
 
+    Symop_4d symop_4d_matrix_0(cart_matrix, translation);
+    Symop_4d symop_4d_matrix_1(eigen_4d_matrix);
+    Symop_4d symop_4d_matrix_2(sym_op);
+
+    if (symop_4d_matrix_0.get_matrix().isApprox(eigen_4d_matrix) &&
+        symop_4d_matrix_1.get_matrix().isApprox(eigen_4d_matrix) &&
+        symop_4d_matrix_2.get_matrix().isApprox(eigen_4d_matrix))
+    {
+        return true;
+    }
+    std::cout << symop_4d_matrix_0.get_matrix() << std::endl;
+    std::cout << symop_4d_matrix_1.get_matrix() << std::endl;
+    std::cout << symop_4d_matrix_2.get_matrix() << std::endl;
 
     return false;
 }
