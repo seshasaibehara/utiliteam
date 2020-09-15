@@ -116,9 +116,6 @@ std::vector<Eigen::Vector3d> eigenvectors_with_positive_unit_eigenvalues(const E
     return output_eigen_vectors;
 }
 
-enum class SYMOP_TYPE{
-    IDENTITY, INVERSION, GLIDE, SCREW, MIRROR, ROTATION, IMPROPER_ROTATION};
-
 SYMOP_TYPE check_op_type(const SymOp sym_op, const Lattice lattice, double tol)
 { // take in sym_op returns string of op type
     int trace = sym_op.get_cart_matrix().trace();
@@ -180,7 +177,7 @@ std::optional<Subspace> find_invariant_subspace(SymOp symop, Lattice lattice, do
         auto type=check_op_type(symop, lattice, tol);
         if(type==SYMOP_TYPE::SCREW || type ==SYMOP_TYPE::GLIDE){
             return;}
-        auto symop_matrix=symop.get_4d__matrix();
+        auto symop_matrix=symop.get_combined_matrix();
         Eigen::Matrix3d basis_matrix = Eigen::Matrix3d::Zero();
         Eigen::Vector3d offset = Eigen::Vector3d::Zero();
         Eigen::EigenSolver<Eigen::Matrix4d> solver(symop_matrix, true);

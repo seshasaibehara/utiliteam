@@ -14,7 +14,7 @@ bool has_translation(const Eigen::Vector3d translation, const Eigen::Matrix3d la
 Eigen::Vector3d project_translation_onto_vectors(const std::vector<Eigen::Vector3d>& eigen_vectors, Eigen::Vector3d translation);
 bool almost_equal(double LHS, double RHS, double tol);
 std::vector<Eigen::Vector3d> eigenvectors_with_positive_unit_eigenvalues(const Eigen::Matrix3d& cart_matrix, double tol);
-enum class SYMOP_TYPE;
+enum class SYMOP_TYPE{IDENTITY, INVERSION, GLIDE, SCREW, MIRROR, ROTATION, IMPROPER_ROTATION};
 SYMOP_TYPE check_op_type(const SymOp sym_op, const Lattice lattice, double tol);
 std::optional<Subspace> find_invariant_subspace(SymOp symop, Lattice lattice, double tol);
 
